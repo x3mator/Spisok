@@ -3,15 +3,14 @@ const author = document.getElementById("author");
 const post = document.getElementById("post");
 const numTodo = document.querySelector('.todo__count');
 
-const todoTitle = document.querySelector(".todo__title");
 const list = document.querySelector(".todo__list");
 
 const base = {
   employee: "Петров Сергей Иванович",
   todo: getTodoLS(),
   check(id) {
-    for (let i=0; i < base.todo.length; i++) {
-      if(base.todo[i].id === id) {
+    for (let i = 0; i < base.todo.length; i++) {
+      if (base.todo[i].id === id) {
         base.todo[i].ready = true
       }
     }
@@ -26,6 +25,13 @@ const base = {
 
     base.todo.push(todo);
     return todo;
+  },
+  removeTodo(id) {
+    for (let i = 0; i < base.todo.length; i++) {
+      if (base.todo[i].id === id) {
+        base.todo.splice(i, 1)
+      }
+    }
   },
 };
 
@@ -46,21 +52,20 @@ function createTodo(objTodo) {
     <article class="post ${objTodo.ready ? 'post_complete' : ''}">
         <h3 class="post__author">${objTodo.author}</h3>
         <p class="post__todo">${objTodo.post}</p>
-        ${!objTodo.ready ? 
-            `<button 
+        ${!objTodo.ready ?
+    `<button 
               class="post__ready" 
               type="button"
               data-id="${objTodo.id}"
               >✔</button>` :
-            `<button 
+    `<button 
               class="post__close" 
               type="button"
               data-id="${objTodo.id}"
               >X</button>`
-          }
-
+  }
     </article>
-`;
+  `;
 
   const li = document.createElement("li");
   li.classList.add("todo__list-item");
@@ -70,7 +75,7 @@ function createTodo(objTodo) {
 }
 
 function renderTodo() {
-  for (let i=0; i< base.todo.length; i++) {
+  for (let i = 0; i < base.todo.length; i++) {
     const todoLi = createTodo(base.todo[i]);
     list.append(todoLi);
   }
@@ -79,7 +84,7 @@ function renderTodo() {
 
 function checkTodo(event) {
   const btn = event.target.closest('.post__ready')
-  if(btn) {
+  if (btn) {
     const post = btn.closest('.post')
     btn.remove()
     post.classList.add('post_complete')
@@ -94,9 +99,10 @@ function checkTodo(event) {
   }
 
   const btnClose = event.target.closest('.post__close')
-  if(btnClose) {
+  if (btnClose) {
     //удаляем запись
-    base.todo.splice(base.todo.indexOf(btnClose), 1)
+    const id = btnClose.dataset.id
+    base.removeTodo(id)
     const post = btnClose.closest('.post')
     post.remove()
     setTodoLS()
@@ -105,11 +111,12 @@ function checkTodo(event) {
 }
 
 function getTodoLS() {
-  if(localStorage.getItem('todo')) {
+  if (localStorage.getItem('todo')) {
     return JSON.parse(localStorage.getItem('todo'))
   }
   return []
 }
+
 function setTodoLS() {
   localStorage.setItem('todo', JSON.stringify(base.todo))
 }
